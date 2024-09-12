@@ -17,11 +17,81 @@
 body {
   color: var(--foreground);
   background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-geist-sans), Arial, Helvetica, sans-serif;
 }
 
 @layer utilities {
   .text-balance {
     text-wrap: balance;
   }
+}
+
+/* Flow app specific styles */
+.flow-app {
+  background-color: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(10px);
+}
+
+.flow-app button,
+.flow-app input,
+.flow-app select {
+  @apply rounded-md border border-white border-opacity-20 bg-white bg-opacity-10 px-3 py-2 text-sm text-white transition-colors hover:bg-opacity-20 focus:outline-none focus:ring-2 focus:ring-white focus:ring-opacity-50;
+}
+
+.flow-app h1,
+.flow-app h2,
+.flow-app h3,
+.flow-app h4,
+.flow-app h5,
+.flow-app h6 {
+  @apply font-semibold text-white;
+}
+
+/* iOS-style corner smoothing */
+.ios-corners {
+  border-radius: 12px;
+  -webkit-mask-image: -webkit-radial-gradient(white, black);
+}
+
+/* Obsidian app specific styles */
+.obsidian-app {
+  background-color: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(10px);
+}
+
+.obsidian-app .sidebar {
+  background-color: rgba(0, 0, 0, 0.3);
+  border-right: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.obsidian-app .editor {
+  background-color: rgba(0, 0, 0, 0.2);
+}
+
+.obsidian-app button,
+.obsidian-app input,
+.obsidian-app textarea {
+  @apply rounded-md border border-white border-opacity-20 bg-white bg-opacity-10 px-3 py-2 text-sm text-white transition-colors hover:bg-opacity-20 focus:outline-none focus:ring-2 focus:ring-white focus:ring-opacity-50;
+}
+
+.obsidian-app h1,
+.obsidian-app h2,
+.obsidian-app h3,
+.obsidian-app h4,
+.obsidian-app h5,
+.obsidian-app h6 {
+  @apply font-semibold text-white;
+}
+
+.obsidian-app .folder-item,
+.obsidian-app .file-item {
+  @apply flex items-center cursor-pointer hover:bg-white hover:bg-opacity-10 rounded p-1 transition-colors duration-200;
+}
+
+.obsidian-app .context-menu {
+  @apply bg-black bg-opacity-80 backdrop-blur-md border border-white border-opacity-20 rounded-md shadow-lg;
+}
+
+.obsidian-app .context-menu-item {
+  @apply block w-full text-left px-4 py-2 hover:bg-white hover:bg-opacity-10 transition-colors duration-200;
 }
