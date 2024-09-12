@@ -9,7 +9,7 @@ export interface AppDefinition {
 
 export const appDefinitions: AppDefinition[] = [
   {
-    id: "finder",
+    id: "mariana",
     name: "Finder",
     icon: "/media/finder.png",
     dockPosition: 0,

@@ -1,31 +1,29 @@
-// /root/app/apps/obsidian/page.tsx
+// /root/app/apps/mariana/page.tsx
 import React, { useState, useCallback } from "react";
 import { AnimatePresence } from "framer-motion";
 import Sidebar from "./components/Sidebar";
 import Editor from "./components/Editor";
 import ContextMenu from "./components/ContextMenu";
-import { FolderStructure, ItemType } from "./types";
+import { ExtendedTreeViewElement } from "./types";
 
-export default function ObsidianApp() {
-  const [folders, setFolders] = useState<FolderStructure[]>([]);
-  const [selectedFile, setSelectedFile] = useState<FolderStructure | null>(
-    null
-  );
+export default function MarianaApp() {
+  const [elements, setElements] = useState<ExtendedTreeViewElement[]>([]);
+  const [selectedFile, setSelectedFile] =
+    useState<ExtendedTreeViewElement | null>(null);
   const [contextMenu, setContextMenu] = useState<{
     x: number;
     y: number;
-    type: ItemType;
-    parentId: string | null;
+    element: ExtendedTreeViewElement;
   } | null>(null);
   const [debugInfo, setDebugInfo] = useState<string>("");
 
   const handleContextMenu = useCallback(
-    (e: React.MouseEvent, type: ItemType, parentId: string | null) => {
+    (e: React.MouseEvent, element: ExtendedTreeViewElement) => {
       e.preventDefault();
-      const newContextMenu = { x: e.clientX, y: e.clientY, type, parentId };
+      const newContextMenu = { x: e.clientX, y: e.clientY, element };
       setContextMenu(newContextMenu);
       setDebugInfo(
-        `Context menu opened at (${e.clientX}, ${e.clientY}) for ${type}, parent: ${parentId || "root"}`
+        `Context menu opened at (${e.clientX}, ${e.clientY}) for ${element.type}, id: ${element.id}`
       );
     },
     []
@@ -36,7 +34,7 @@ export default function ObsidianApp() {
     setDebugInfo("Context menu closed");
   }, []);
 
-  const handleSelectFile = useCallback((file: FolderStructure) => {
+  const handleSelectFile = useCallback((file: ExtendedTreeViewElement) => {
     if (file.type === "file") {
       setSelectedFile(file);
       setDebugInfo(`Selected file: ${file.name}`);
@@ -45,24 +43,22 @@ export default function ObsidianApp() {
 
   return (
     <AnimatePresence>
-      <div className="obsidian-app h-full w-full flex flex-col bg-black bg-opacity-50 backdrop-blur-md text-white">
+      <div className="mariana-app h-full w-full flex flex-col bg-black bg-opacity-50 backdrop-blur-md text-white">
         <div className="flex flex-grow overflow-hidden">
           <Sidebar
-            folders={folders}
-            setFolders={setFolders}
-            onContextMenu={handleContextMenu}
+            elements={elements}
             onSelectFile={handleSelectFile}
+            onContextMenu={handleContextMenu}
           />
           <Editor selectedFile={selectedFile} />
           {contextMenu && (
             <ContextMenu
               x={contextMenu.x}
               y={contextMenu.y}
-              type={contextMenu.type}
-              parentId={contextMenu.parentId}
+              element={contextMenu.element}
               onClose={handleCloseContextMenu}
-              folders={folders}
-              setFolders={setFolders}
+              elements={elements}
+              setElements={setElements}
             />
           )}
         </div>

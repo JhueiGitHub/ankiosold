@@ -1,15 +1,14 @@
-// /root/app/apps/obsidian/components/ContextMenu.tsx
+// /root/app/apps/mariana/components/ContextMenu.tsx
 import React, { useEffect, useRef, useCallback } from "react";
-import { ContextMenuProps, FolderStructure } from "../types";
+import { ContextMenuProps, ExtendedTreeViewElement } from "../types";
 
 const ContextMenu: React.FC<ContextMenuProps> = ({
   x,
   y,
-  type,
-  parentId,
+  element,
   onClose,
-  folders,
-  setFolders,
+  elements,
+  setElements,
 }) => {
   const menuRef = useRef<HTMLDivElement>(null);
 
@@ -29,65 +28,69 @@ const ContextMenu: React.FC<ContextMenuProps> = ({
   const createFolder = useCallback(() => {
     const newFolderName = prompt("Enter folder name:");
     if (newFolderName) {
-      const newFolder: FolderStructure = {
+      const newFolder: ExtendedTreeViewElement = {
         id: `folder-${Date.now()}`,
         name: newFolderName,
         type: "folder",
         children: [],
-        parentId: parentId,
       };
-      setFolders((prev) => {
-        const updatedFolders = [...prev];
-        if (parentId) {
-          addItemToFolder(updatedFolders, parentId, newFolder);
+      setElements((prev) => {
+        const updatedElements = [...prev];
+        if (element.type === "folder") {
+          const parentFolder = findElementById(updatedElements, element.id);
+          if (parentFolder && parentFolder.children) {
+            parentFolder.children.push(newFolder);
+          } else if (parentFolder) {
+            parentFolder.children = [newFolder];
+          }
         } else {
-          updatedFolders.push(newFolder);
+          updatedElements.push(newFolder);
         }
-        return updatedFolders;
+        return updatedElements;
       });
     }
     onClose();
-  }, [setFolders, onClose, parentId]);
+  }, [element, setElements, onClose]);
 
   const createFile = useCallback(() => {
     const newFileName = prompt("Enter file name:");
     if (newFileName) {
-      const newFile: FolderStructure = {
+      const newFile: ExtendedTreeViewElement = {
         id: `file-${Date.now()}`,
         name: newFileName,
         type: "file",
         content: "",
-        parentId: parentId,
       };
-      setFolders((prev) => {
-        const updatedFolders = [...prev];
-        if (parentId) {
-          addItemToFolder(updatedFolders, parentId, newFile);
+      setElements((prev) => {
+        const updatedElements = [...prev];
+        if (element.type === "folder") {
+          const parentFolder = findElementById(updatedElements, element.id);
+          if (parentFolder && parentFolder.children) {
+            parentFolder.children.push(newFile);
+          } else if (parentFolder) {
+            parentFolder.children = [newFile];
+          }
         } else {
-          updatedFolders.push(newFile);
+          updatedElements.push(newFile);
         }
-        return updatedFolders;
+        return updatedElements;
       });
     }
     onClose();
-  }, [setFolders, onClose, parentId]);
+  }, [element, setElements, onClose]);
 
-  const addItemToFolder = (
-    items: FolderStructure[],
-    folderId: string,
-    newItem: FolderStructure
-  ) => {
-    for (const item of items) {
-      if (item.id === folderId && item.type === "folder") {
-        item.children = item.children || [];
-        item.children.push(newItem);
-        return true;
-      }
-      if (item.type === "folder" && item.children) {
-        if (addItemToFolder(item.children, folderId, newItem)) return true;
+  const findElementById = (
+    elements: ExtendedTreeViewElement[],
+    id: string
+  ): ExtendedTreeViewElement | undefined => {
+    for (const el of elements) {
+      if (el.id === id) return el;
+      if (el.children) {
+        const found = findElementById(el.children, id);
+        if (found) return found;
       }
     }
-    return false;
+    return undefined;
   };
 
   return (
@@ -112,7 +115,7 @@ const ContextMenu: React.FC<ContextMenuProps> = ({
       >
         New File
       </button>
-      {type === "file" && (
+      {element.type === "file" && (
         <button
           className="block w-full text-left px-4 py-2 hover:bg-white hover:bg-opacity-10 text-white"
           onClick={onClose}
